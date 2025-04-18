@@ -1,65 +1,80 @@
-<x-guest-layout>
-    @php
-        $role = $role ?? 'pengguna';
-        $roleTitle = ucfirst($role);
-        $colorClass = $role === 'dokter' ? 'bg-blue-100 text-blue-800'
-                    : ($role === 'pasien' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-700');
-    @endphp
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register Pasien - Klinik App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
 
-    <div class="text-center mb-6">
-        <h2 class="text-2xl font-bold">Register {{ $roleTitle }}</h2>
+<div class="w-full max-w-5xl bg-white rounded-xl shadow-xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
+    {{-- Kiri --}}
+    <div class="p-10 flex flex-col justify-center">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">REGISTER PASIEN</h2>
+        <p class="text-gray-600 mb-6">Silakan isi data untuk mendaftar sebagai <strong>Pasien</strong></p>
+
+        @if ($errors->any())
+            <div class="mb-4 text-sm text-red-600">
+                <ul class="list-disc ml-4">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('register.pasien') }}" class="space-y-4">
+            @csrf
+            <input type="hidden" name="role" value="pasien">
+
+            {{-- Name --}}
+            <input type="text" name="name" placeholder="Nama lengkap"
+                   class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                   required autofocus>
+
+            {{-- Email --}}
+            <input type="email" name="email" placeholder="Alamat email"
+                   class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                   required>
+
+            {{-- Password --}}
+            <input type="password" name="password" placeholder="Password"
+                   class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                   required>
+
+            {{-- Confirm --}}
+            <input type="password" name="password_confirmation" placeholder="Konfirmasi Password"
+                   class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                   required>
+
+            <button type="submit"
+                    class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
+                Daftar
+            </button>
+        </form>
+
+        <p class="text-sm text-gray-500 mt-6">
+            Sudah punya akun?
+            <a href="{{ route('login.pasien') }}" class="text-blue-600 hover:underline">Login disini</a>
+        </p>
     </div>
 
-    <div class="mb-4 p-3 rounded {{ $colorClass }}">
-        Silakan daftar sebagai <strong>{{ $roleTitle }}</strong>.
+    {{-- Kanan --}}
+    <div class="bg-gradient-to-br from-blue-600 to-blue-400 text-white flex items-center justify-center">
+        <div class="text-center px-8">
+            <img src="https://cdn-icons-png.flaticon.com/512/706/706797.png"
+                 class="w-40 mx-auto mb-6" alt="Register Illustration">
+            <h3 class="text-2xl font-bold">Selamat Datang</h3>
+            <p class="text-sm mt-2">Pendaftaran untuk Pasien Klinik</p>
+        </div>
     </div>
+</div>
 
-    <form method="POST" action="{{ route('register') }}">
-        @csrf
-
-        <input type="hidden" name="role" value="{{ $role }}">
-
-        <!-- Name -->
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
-        </div>
-
-        <!-- Email Address -->
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
-
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900" href="{{ route('login') }}">
-                {{ __('Already registered?') }}
-            </a>
-
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+</body>
+</html>

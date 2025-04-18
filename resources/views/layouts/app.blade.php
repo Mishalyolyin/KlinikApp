@@ -20,8 +20,9 @@
         @endauth
 
         <main class="flex-1 overflow-y-auto py-6 px-4">
-            {{ $slot }} {{-- slot dari layout --}}
+        {{ $slot }}       
         </main>
+
     </div>
 
     @livewireScripts

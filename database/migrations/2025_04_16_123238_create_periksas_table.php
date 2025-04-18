@@ -9,8 +9,11 @@ return new class extends Migration {
         Schema::create('periksas', function (Blueprint $table) {
             $table->id();
             $table->foreignId('pasien_id')->constrained('users')->onDelete('cascade');
-            $table->text('keluhan');
-            $table->date('tanggal');
+            $table->string('nama'); // nama pasien
+            $table->integer('umur'); // umur pasien
+            $table->float('berat_badan'); // berat badan pasien
+            $table->text('keluhan'); // keluhan penyakit
+            $table->date('tanggal'); // tanggal periksa
             $table->enum('status', ['menunggu', 'selesai'])->default('menunggu');
             $table->timestamps();
         });

@@ -10,6 +10,10 @@ use App\Livewire\Dokter\Dashboard as DokterDashboard;
 use App\Livewire\Dokter\ResepIndex;
 use App\Livewire\Dokter\PasienIndex;
 use App\Livewire\Dokter\PasienRiwayatResep;
+use App\Livewire\Pasien\Dashboard as PasienDashboard;
+use App\Livewire\Pasien\RiwayatResep;
+use App\Livewire\Pasien\AjukanPeriksa;
+use App\Livewire\Auth\Login;
 
 // ------------------------------------------
 // 🏠 HALAMAN AWAL
@@ -18,13 +22,18 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Redirect /dashboard ke dashboard dokter
+// Redirect /dashboard ke dashboard sesuai role
 Route::get('/dashboard', function () {
-    return redirect()->route('dokter.dashboard');
-});
+    if (auth()->user()?->role === 'dokter') {
+        return redirect()->route('dokter.dashboard');
+    } elseif (auth()->user()?->role === 'pasien') {
+        return redirect()->route('pasien.dashboard');
+    }
+    return redirect('/');
+})->middleware(['auth'])->name('dashboard');
 
 // ------------------------------------------
-// 👤 ROUTE USER UMUM (EDIT PROFIL, LOGOUT, DLL)
+// 👤 ROUTE USER UMUM
 // ------------------------------------------
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -33,7 +42,7 @@ Route::middleware('auth')->group(function () {
 });
 
 // ------------------------------------------
-// 🧐‍⚕️ ROUTE KHUSUS DOKTER
+// 👨‍⚕️ ROUTE KHUSUS DOKTER
 // ------------------------------------------
 Route::middleware(['auth', 'role:dokter'])->prefix('dokter')->name('dokter.')->group(function () {
     Route::get('/dashboard', DokterDashboard::class)->name('dashboard');
@@ -44,25 +53,23 @@ Route::middleware(['auth', 'role:dokter'])->prefix('dokter')->name('dokter.')->g
 });
 
 // ------------------------------------------
-// 🧑‍💼 ROUTE KHUSUS PASIEN
+// 🧑‍⚕️ ROUTE KHUSUS PASIEN
 // ------------------------------------------
 Route::middleware(['auth', 'role:pasien'])->prefix('pasien')->name('pasien.')->group(function () {
-    Route::get('/dashboard', [PasienController::class, 'index'])->name('dashboard');
-    // Tambahkan fitur lain untuk pasien di sini
+    Route::get('/dashboard', PasienDashboard::class)->name('dashboard');
+    Route::get('/riwayat-resep', RiwayatResep::class)->name('riwayat-resep');
+    Route::get('/ajukan-periksa', AjukanPeriksa::class)->name('ajukan-periksa');
 });
 
 // ------------------------------------------
-// 🔐 LOGIN & REGISTER KHUSUS PER ROLE
+// 🔐 LOGIN & REGISTER (Livewire)
 // ------------------------------------------
-Route::get('/login', function () {
-    return view('auth.select-login');
-})->name('login');
-
-Route::get('/login/dokter', [AuthenticatedSessionController::class, 'createDokter'])->name('login.dokter');
-Route::get('/login/pasien', [AuthenticatedSessionController::class, 'createPasien'])->name('login.pasien');
+Route::get('/login/dokter', Login::class)->name('login.dokter');
+Route::get('/login/pasien', Login::class)->name('login.pasien');
+Route::get('/login', fn () => view('auth.select-login'))->name('login');
 
 Route::get('/register/dokter', [RegisteredUserController::class, 'createDokter'])->name('register.dokter');
 Route::get('/register/pasien', [RegisteredUserController::class, 'createPasien'])->name('register.pasien');
+Route::post('/register/pasien', [RegisteredUserController::class, 'store'])->name('register.pasien');
 
-// Route default auth dari Breeze
 require __DIR__.'/auth.php';

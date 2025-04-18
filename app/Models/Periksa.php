@@ -11,6 +11,9 @@ class Periksa extends Model
 
     protected $fillable = [
         'pasien_id',
+        'nama',
+        'umur',
+        'berat_badan',
         'keluhan',
         'tanggal',
         'status'

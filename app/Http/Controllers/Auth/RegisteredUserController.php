@@ -45,7 +45,7 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role' => ['required', 'in:pasien,dokter'],
         ]);
@@ -60,6 +60,13 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        // Redirect berdasarkan role
+        if ($user->role === 'dokter') {
+            return redirect()->route('dokter.dashboard');
+        } elseif ($user->role === 'pasien') {
+            return redirect()->route('pasien.dashboard');
+        }
+
+        return redirect('/'); // fallback redirect (seharusnya tidak pernah terpanggil)
     }
 }

@@ -81,6 +81,7 @@ class ResepIndex extends Component
             'obat_id' => $this->obat_id,
             'tanggal_cek' => $this->tanggal_cek,
             'dosis' => $this->dosis,
+            'dokter_id' => auth()->user()->id, // ✅ solusi aman
         ]);
 
         session()->flash('message', 'Resep berhasil ditambahkan.');
